@@ -1,85 +1,74 @@
 # DevOps Lite - Current Problem Analysis
 
-## Current Problem: Cramped Shimeji UI and Feature Menu Issues
+## Current Problem: Shimeji Interactivity and Jittering
 
 ### Problem Description
-The Shimeji widget appears as a tiny 64x64 pixel circular button that is difficult to interact with. The feature menu, when opened, displays cramped bubble buttons that are hard to read and click. The overall user experience is poor due to:
+The Shimeji widget is now clickable, but it still behaves incorrectly. When the mouse hovers or clicks the widget, it jitters and/or the app window appears to move unexpectedly. The feature menu is still not reliably visible in a stable way.
 
-1. **Tiny Shimeji Size**: 64x64 pixels is too small for comfortable interaction
-2. **Cramped Menu Layout**: Feature buttons are squeezed together with poor spacing
-3. **Poor Visual Hierarchy**: Text and icons are hard to distinguish at small sizes
-4. **Limited Accessibility**: Hard to click precisely on small targets
+### Observed Behavior
+- Shimeji is no longer reliably interactive; clicks sometimes do not register on the widget.
+- The widget still jitters visually during pointer movement.
+- The feature menu can appear on the far right of the screen instead of anchored near the widget.
+- Feature selection often results in configuration errors (Gemini API not configured, project path not configured), which may be separate from the interactivity bug.
+- A large transparent portion of the Electron window can become effectively unclickable, creating an invisible click barrier.
+- The UI still feels like the active area is not properly aligned with the actual Electron window.
 
-### Root Cause Analysis
+### Architecture / Implementation Details
+#### Renderer
+- `src/components/Shimeji.tsx` renders the floating widget.
+- The component uses React pointer events to track drag state.
+- The widget now uses a fixed window size and native `window.electronAPI.moveWindow(x, y)` movement.
+- The renderer should not drive visual positioning independently of the native window.
 
-#### 1. Fixed Small Window Size
-**Location**: main.ts - createWindow() function
-**Problem**: Window is hardcoded to 64x64 pixels for "Shimeji" mode
-```typescript
-width: 64,
-height: 64,
-```
-This creates a tiny floating widget that's difficult to interact with.
+#### Main process
+- `main.ts` creates a frameless, transparent `BrowserWindow` at 128x128 for Shimeji mode.
+- IPC handlers were added for `devops:window:move` only; resize should no longer be used.
+- `preload.ts` exposes `moveWindow` through `window.electronAPI`.
 
-#### 2. Bubble Menu Design Issues
-**Location**: src/components/FeatureMenu.tsx
-**Problems**:
-- Fixed small button sizes (w-12 h-12)
-- Poor text scaling and readability
-- Inadequate spacing between elements
-- No responsive design for different screen sizes
+### Root Cause Hypothesis
+1. **Window-level movement and renderer movement are conflicting**
+   - The renderer updates local position state and also asks the main process to reposition the window.
+   - This may create a feedback loop or unsynchronized position values.
 
-#### 3. Lack of Size Options
-**Problem**: No configuration options for different Shimeji sizes
-- No user preference for widget size
-- No adaptive sizing based on screen resolution
-- No accessibility options for larger interfaces
+2. **Window resizing on menu open is unstable**
+   - Resizing a frameless 64x64 window on hover/click can cause visual jumping.
+   - The rendered menu is still being shown inside a tiny floating window, which is not ideal.
 
-### Current Goal: Implement Perfect Shimeji Experience
+3. **Pointer logic may be too sensitive**
+   - Movement is triggered on small pointer deviations, making it feel jittery.
+   - `pointerMovedRef` and `isDragging` logic can still fire unexpectedly.
 
-#### Primary Objectives
-1. **Comfortable Interaction**: Make the Shimeji large enough to click easily (120x120px minimum)
-2. **Beautiful Menu Design**: Create an elegant floating bubble menu with proper spacing
-3. **Smooth Animations**: Implement polished entrance/exit animations
-4. **Accessibility**: Ensure all elements are easy to see and interact with
-5. **Responsive Design**: Adapt to different screen sizes and user preferences
+4. **UI hover style changes can amplify jitter**
+   - Even after removing hover/active animations, the window itself may still repaint on hover.
 
-#### Technical Implementation Plan
+### Fixes Tried (and Still Failing)
+- Added IPC support for `moveWindow` and `resizeWindow` in `main.ts` and `preload.ts`.
+- Moved window position from `Shimeji.tsx` to Electron main process.
+- Disabled the wandering animation in `src/components/Shimeji.tsx`.
+- Removed hover and click animation effects from the Shimeji component.
+- Set CSS transition to `none` to eliminate renderer animation jitter.
+- Added explicit `moveWindow` calls during drag and when position changes.
 
-##### Phase 1: Shimeji Size Optimization
-- Increase default size to 120x120px (doubled from 64x64)
-- Add size configuration options
-- Implement smooth scaling animations
-- Ensure proper positioning and bounds checking
+### Why It Still Fails
+- The current architecture still ties the visible Shimeji position to both React state and native window bounds.
+- Resizing the window for the menu is still happening inside the same small frameless window, which is inherently unstable.
+- The Shimeji widget should not rely on DOM positioning inside a tiny window if the actual window is also being moved.
 
-##### Phase 2: Menu Redesign
-- Redesign FeatureMenu as floating bubbles with better spacing
-- Implement staggered animation entrance
-- Add hover effects and better visual feedback
-- Improve typography and icon sizing
+### Recommended Next Step
+- Stop resizing the Shimeji window for the menu.
+- Keep the main Shimeji window at a fixed size (128x128) and render the menu inside that fixed window.
+- Simplify the drag model: the native BrowserWindow should be the only source of truth for position.
+- Apply true click-through behavior to transparent window areas by using `setIgnoreMouseEvents(true, { forward: true })` and setting page background pointer-events to none.
+- Add a stable `dragging` threshold so tiny pointer movements do not trigger window repositioning.
+- Make transparent window areas click-through and keep only the Shimeji widget/menu interactive.
 
-##### Phase 3: Enhanced UX
-- Add size preference storage (localStorage)
-- Implement right-click context menu for size options
-- Add keyboard shortcuts for menu navigation
-- Ensure proper focus management
-
-#### Success Criteria
-- [ ] Shimeji is comfortably clickable (120px+ size)
-- [ ] Feature menu displays clearly with readable text
-- [ ] Smooth animations enhance user experience
-- [ ] Menu items are easy to distinguish and click
-- [ ] Interface works well on different screen sizes
-- [ ] No cramped or hard-to-see elements
-
-### Implementation Status
-- [ ] Shimeji size increased to comfortable dimensions
-- [ ] Feature menu redesigned with proper spacing
-- [ ] Animations implemented and polished
-- [ ] User preferences for size added
-- [ ] Accessibility improvements completed
-- [ ] Cross-platform testing done
+### Current Status
+- [x] Shimeji is clickable.
+- [ ] Jittering remains on hover/click.
+- [ ] Stable menu rendering not achieved.
+- [ ] Drag behavior needs simplification.
+- [ ] Window resize approach should be rethought.
 
 ---
-Created: Current Date
-Status: PROBLEM IDENTIFIED - READY FOR IMPLEMENTATION
+Created: May 17, 2026
+Status: INVESTIGATING - FIX INCOMPLETE

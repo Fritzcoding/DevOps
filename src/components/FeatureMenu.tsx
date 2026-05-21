@@ -80,12 +80,12 @@ export const FeatureMenu: React.FC<FeatureMenuProps> = ({
   ];
 
   return (
-    <div className="fixed top-24 right-6 z-50 pointer-events-none">
+    <div className="fixed left-16 top-20 z-50 pointer-events-none" data-electron-interactive="true">
       <div
         ref={menuRef}
-        className="pointer-events-auto relative min-w-[18rem] rounded-3xl border border-white/70 bg-white/95 shadow-2xl backdrop-blur-xl p-4 animate-popIn"
+        className="pointer-events-auto relative min-w-[18rem] rounded-lg border border-white/70 bg-white/95 shadow-2xl backdrop-blur-xl p-4 animate-popIn"
       >
-        <div className="absolute -top-2 right-6 h-4 w-4 rotate-45 rounded-sm bg-white/95 border-t border-l border-white/80" />
+        <div className="absolute -top-2 left-8 h-4 w-4 rotate-45 rounded-sm bg-white/95 border-t border-l border-white/80" />
 
         <div className="flex items-center justify-between gap-3 mb-4">
           <div>
@@ -109,9 +109,9 @@ export const FeatureMenu: React.FC<FeatureMenuProps> = ({
                 onFeatureSelect(key);
                 onClose();
               }}
-              className={`group flex items-center gap-3 rounded-3xl px-4 py-3 bg-gradient-to-r ${color} text-white shadow-lg shadow-slate-200/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
+              className={`group flex items-center gap-3 rounded-lg px-4 py-3 bg-gradient-to-r ${color} text-white shadow-lg shadow-slate-200/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 text-white transition-colors duration-300 group-hover:bg-white/25">
+              <span className="flex h-11 w-11 items-center justify-center rounded-md bg-white/15 text-white transition-colors duration-300 group-hover:bg-white/25">
                 <Icon className="w-5 h-5" />
               </span>
               <div className="text-left">
@@ -122,13 +122,13 @@ export const FeatureMenu: React.FC<FeatureMenuProps> = ({
           ))}
         </div>
 
-        <div className="mt-4 rounded-3xl bg-slate-950/5 p-3 border border-slate-200/80">
+        <div className="mt-4 rounded-lg bg-slate-950/5 p-3 border border-slate-200/80">
           <button
             onClick={() => {
               onFeatureSelect('help');
               onClose();
             }}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            className="flex w-full items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
           >
             <HelpCircle className="w-4 h-4" />
             Help & shortcuts

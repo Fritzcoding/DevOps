@@ -6,6 +6,7 @@ import {
   app,
   BrowserWindow,
   Menu,
+  screen,
   Tray,
   ipcMain,
   IpcMainInvokeEvent,
@@ -40,6 +41,8 @@ import type {
 
 const isDev = process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
 const execAsync = promisify(exec);
+const SHIMEJI_WINDOW_WIDTH = 360;
+const SHIMEJI_WINDOW_HEIGHT = 420;
 
 // Allow forcing the Shimeji (frameless, transparent) window even when running
 // in development. Pass `--shimeji` to Electron or set env `SHIMEJI=1`.
@@ -141,12 +144,13 @@ function createWindow(): void {
 
   mainWindow = new BrowserWindow({
     // Window dimensions
-    width: devMode ? 1000 : 64,
-    height: devMode ? 700 : 64,
+    width: devMode ? 1000 : SHIMEJI_WINDOW_WIDTH,
+    height: devMode ? 700 : SHIMEJI_WINDOW_HEIGHT,
     x: devMode ? 100 : 20,
     y: devMode ? 100 : 20,
-    minWidth: devMode ? 600 : 64,
-    minHeight: devMode ? 400 : 64,
+    minWidth: devMode ? 600 : SHIMEJI_WINDOW_WIDTH,
+    minHeight: devMode ? 400 : SHIMEJI_WINDOW_HEIGHT,
+    resizable: devMode ? true : false,
     
     // Frame setup - normal window for dev, frameless for production
     frame: devMode ? true : false,
@@ -173,6 +177,10 @@ function createWindow(): void {
     },
   });
 
+  if (!devMode && mainWindow) {
+    mainWindow.setIgnoreMouseEvents(true, { forward: true });
+  }
+
   // VERIFICATION LOGGING
   const size = mainWindow.getSize();
   const pos = mainWindow.getPosition();
@@ -181,7 +189,7 @@ function createWindow(): void {
     console.log('[WINDOW] ✓ Framed: true (title bar visible)');
     console.log('[WINDOW] ✓ AlwaysOnTop: false');
   } else {
-    console.log('[WINDOW] ✓ Created: 64x64 (circular) at (20,20)');
+    console.log('[WINDOW] ✓ Created: ' + SHIMEJI_WINDOW_WIDTH + 'x' + SHIMEJI_WINDOW_HEIGHT + ' (Shimeji fixed canvas) at (20,20)');
     console.log('[WINDOW] ✓ Frameless: true');
     console.log('[WINDOW] ✓ AlwaysOnTop:' + mainWindow.isAlwaysOnTop());
   }
@@ -427,19 +435,21 @@ ipcMain.handle('devops:window:show', async () => {
 ipcMain.handle('devops:window:move', async (event: IpcMainInvokeEvent, x: number, y: number) => {
   if (mainWindow) {
     const bounds = mainWindow.getBounds();
-    mainWindow.setBounds({ x, y, width: bounds.width, height: bounds.height });
+    const display = screen.getDisplayMatching({ x, y, width: bounds.width, height: bounds.height });
+    const { workArea } = display;
+    const clampedX = Math.round(Math.max(workArea.x, Math.min(x, workArea.x + workArea.width - bounds.width)));
+    const clampedY = Math.round(Math.max(workArea.y, Math.min(y, workArea.y + workArea.height - bounds.height)));
+    mainWindow.setBounds({ x: clampedX, y: clampedY, width: bounds.width, height: bounds.height });
   }
   return { success: true };
 });
 
-ipcMain.on('quit-app', () => {
-  (app as any).isQuitting = true;
-  app.quit();
+ipcMain.handle('devops:window:set-ignore-mouse-events', async (_event: IpcMainInvokeEvent, ignore: boolean) => {
+  if (mainWindow) {
+    mainWindow.setIgnoreMouseEvents(Boolean(ignore), { forward: true });
+  }
+  return { success: true };
 });
-
-// ============================================================================
-// CODE FIXER - IPC HANDLERS
-// ============================================================================
 
 ipcMain.handle('devops:code-fixer:fix', async (event: IpcMainInvokeEvent, request: any) => {
   try {

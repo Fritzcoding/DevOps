@@ -50,6 +50,7 @@ export interface ElectronAPI {
   minimizeToTray(): Promise<void>;
   showMainWindow(): Promise<void>;
   moveWindow(x: number, y: number): Promise<void>;
+  setIgnoreMouseEvents(ignore: boolean): Promise<void>;
   onShowMenu(callback: () => void): () => void;
 
   // Project Path Selection

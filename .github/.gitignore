@@ -1,0 +1,15 @@
+.github/
+.vscode/
+.idea/
+*.log
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+node_modules/
+dist/
+build/
+agents.md
+.DS_Store
+Thumbs.db

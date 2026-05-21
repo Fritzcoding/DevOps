@@ -66,14 +66,15 @@ const electronAPI: ElectronAPI = {
   
   moveWindow: (x: number, y: number) =>
     ipcRenderer.invoke('devops:window:move', x, y),
+
+  setIgnoreMouseEvents: (ignore: boolean) =>
+    ipcRenderer.invoke('devops:window:set-ignore-mouse-events', ignore),
   
   onShowMenu: (callback) => {
     const wrappedCallback = () => callback();
     ipcRenderer.on('devops:show-menu', wrappedCallback);
     return () => ipcRenderer.off('devops:show-menu', wrappedCallback);
   },
-
-  // Project Path Selection
   selectProjectPath: () =>
     ipcRenderer.invoke('devops:dialog:select-path'),
 

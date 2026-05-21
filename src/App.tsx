@@ -37,6 +37,34 @@ export default function App() {
     }
   }, []);
 
+  useEffect(() => {
+    let lastIgnored: boolean | null = null;
+
+    const setIgnored = (ignored: boolean) => {
+      if (lastIgnored === ignored) return;
+      lastIgnored = ignored;
+      window.electronAPI?.setIgnoreMouseEvents?.(ignored);
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      const target = document.elementFromPoint(event.clientX, event.clientY);
+      const interactive = target instanceof Element && Boolean(target.closest("[data-electron-interactive='true']"));
+      setIgnored(!interactive);
+    };
+
+    const handleMouseLeave = () => setIgnored(true);
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    setIgnored(true);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      window.electronAPI?.setIgnoreMouseEvents?.(false);
+    };
+  }, []);
+
   // Handle project path selection
   const handleSelectPath = async () => {
     try {
@@ -240,7 +268,7 @@ const result = add(5 3);
 
       {/* Loading Indicator */}
       {isLoading && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50" data-electron-interactive="true">
           <div className="bg-white rounded-lg p-6 shadow-xl flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
             <p className="text-gray-700 font-medium">Processing...</p>
@@ -250,7 +278,7 @@ const result = add(5 3);
 
       {/* Error Alert */}
       {error && (
-        <div className="fixed top-4 right-4 z-50 bg-red-100 border border-red-300 rounded-lg p-4 max-w-sm shadow-lg">
+        <div className="fixed top-4 right-4 z-50 bg-red-100 border border-red-300 rounded-lg p-4 max-w-sm shadow-lg" data-electron-interactive="true">
           <p className="text-red-800 font-medium">Error</p>
           <p className="text-red-700 text-sm mt-1">{error}</p>
           <button
@@ -264,39 +292,45 @@ const result = add(5 3);
 
       {/* Code Fixer Overlay */}
       {showDiffViewer && codeFixResult && (
-        <DiffViewer
-          original={codeFixResult.original}
-          fixed={codeFixResult.fixed}
-          explanation={codeFixResult.explanation}
-          language={codeFixResult.language}
-          confidence={codeFixResult.confidence}
-          onClose={() => setShowDiffViewer(false)}
-        />
+        <div data-electron-interactive="true">
+          <DiffViewer
+            original={codeFixResult.original}
+            fixed={codeFixResult.fixed}
+            explanation={codeFixResult.explanation}
+            language={codeFixResult.language}
+            confidence={codeFixResult.confidence}
+            onClose={() => setShowDiffViewer(false)}
+          />
+        </div>
       )}
 
       {/* Environment Setup Overlay */}
       {showSetupSteps && setupStepsData && (
-        <SetupStepsOverlay
-          detected_type={setupStepsData.detected_type}
-          missing_tools={setupStepsData.missing_tools}
-          setup_steps={setupStepsData.setup_steps}
-          env_vars_needed={setupStepsData.env_vars_needed}
-          estimated_minutes={setupStepsData.estimated_minutes}
-          onClose={() => setShowSetupSteps(false)}
-        />
+        <div data-electron-interactive="true">
+          <SetupStepsOverlay
+            detected_type={setupStepsData.detected_type}
+            missing_tools={setupStepsData.missing_tools}
+            setup_steps={setupStepsData.setup_steps}
+            env_vars_needed={setupStepsData.env_vars_needed}
+            estimated_minutes={setupStepsData.estimated_minutes}
+            onClose={() => setShowSetupSteps(false)}
+          />
+        </div>
       )}
 
       {/* File Organization Overlay */}
       {showOrganizationPlan && organizationPlan && (
-        <OrganizationPlanOverlay
-          redundant_files={organizationPlan.redundant_files}
-          moves={organizationPlan.moves}
-          new_dirs_to_create={organizationPlan.new_dirs_to_create}
-          summary={organizationPlan.summary}
-          risk_level={organizationPlan.risk_level}
-          onApply={handleApplyOrganization}
-          onCancel={() => setShowOrganizationPlan(false)}
-        />
+        <div data-electron-interactive="true">
+          <OrganizationPlanOverlay
+            redundant_files={organizationPlan.redundant_files}
+            moves={organizationPlan.moves}
+            new_dirs_to_create={organizationPlan.new_dirs_to_create}
+            summary={organizationPlan.summary}
+            risk_level={organizationPlan.risk_level}
+            onApply={handleApplyOrganization}
+            onCancel={() => setShowOrganizationPlan(false)}
+          />
+        </div>
       )}
     </div>
   );

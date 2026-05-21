@@ -39,12 +39,12 @@ const electronAPI = {
     minimizeToTray: () => electron_1.ipcRenderer.invoke('devops:window:minimize-tray'),
     showMainWindow: () => electron_1.ipcRenderer.invoke('devops:window:show'),
     moveWindow: (x, y) => electron_1.ipcRenderer.invoke('devops:window:move', x, y),
+    setIgnoreMouseEvents: (ignore) => electron_1.ipcRenderer.invoke('devops:window:set-ignore-mouse-events', ignore),
     onShowMenu: (callback) => {
         const wrappedCallback = () => callback();
         electron_1.ipcRenderer.on('devops:show-menu', wrappedCallback);
         return () => electron_1.ipcRenderer.off('devops:show-menu', wrappedCallback);
     },
-    // Project Path Selection
     selectProjectPath: () => electron_1.ipcRenderer.invoke('devops:dialog:select-path'),
     // Legacy compatibility
     organizeFolder_legacy: (path, rules) => electron_1.ipcRenderer.invoke('devops:file:organize', { folderPath: path, rules }),
