@@ -23,17 +23,27 @@ interface Props {
 
 const apiPresets = [
   { label: 'OpenAI', url: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' },
+  { label: 'Gemini', url: 'https://generativelanguage.googleapis.com/v1beta', model: 'gemini-2.5-flash' },
   { label: 'DeepSeek', url: 'https://api.deepseek.com/chat/completions', model: 'deepseek-chat' },
   { label: 'Anthropic', url: 'https://api.anthropic.com/v1/messages', model: 'claude-3-5-haiku-latest' },
 ];
 
-const suggestedLocalModels = [
-  'qwen2.5-coder:7b',
-  'qwen2.5-coder:14b',
-  'llama3.1:8b',
-  'mistral:7b',
-  'codellama:7b',
+const suggestedLocalModelOptions = [
+  { name: 'qwen2.5-coder:7b', label: 'Qwen Coder 7B', tier: 'Balanced coding' },
+  { name: 'qwen2.5-coder:14b', label: 'Qwen Coder 14B', tier: 'Stronger coding' },
+  { name: 'qwen2.5-coder:32b', label: 'Qwen Coder 32B', tier: 'High-parameter coding' },
+  { name: 'deepseek-coder-v2:16b', label: 'DeepSeek Coder 16B', tier: 'Code reasoning' },
+  { name: 'llama3.1:8b', label: 'Llama 3.1 8B', tier: 'General local' },
+  { name: 'llama3.1:70b', label: 'Llama 3.1 70B', tier: 'High-parameter general' },
+  { name: 'llama3.3:70b', label: 'Llama 3.3 70B', tier: 'High-parameter general' },
+  { name: 'mistral:7b', label: 'Mistral 7B', tier: 'Lightweight' },
+  { name: 'mixtral:8x7b', label: 'Mixtral 8x7B', tier: 'MoE larger local' },
+  { name: 'codellama:7b', label: 'Code Llama 7B', tier: 'Legacy coding' },
+  { name: 'codellama:13b', label: 'Code Llama 13B', tier: 'Legacy larger coding' },
+  { name: 'codellama:34b', label: 'Code Llama 34B', tier: 'Legacy high-parameter coding' },
 ];
+
+const suggestedLocalModels = suggestedLocalModelOptions.map((model) => model.name);
 
 const clampPercent = (value: unknown) => {
   return Math.max(0, Math.min(100, Math.round(Number(value || 0))));
@@ -279,7 +289,7 @@ export const AISettingsModal: React.FC<Props> = ({ onClose, onBack, firstRun = f
 
             {backend === 'cloud' && (
               <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
                   {apiPresets.map((preset) => (
                     <button
                       key={preset.label}
@@ -351,6 +361,31 @@ export const AISettingsModal: React.FC<Props> = ({ onClose, onBack, firstRun = f
                       ))}
                     </datalist>
                   </label>
+                </div>
+
+                <div className="rounded-lg border border-slate-200 bg-white px-4 py-3">
+                  <div className="mb-2 text-sm font-semibold text-slate-900">Suggested local models</div>
+                  <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                    {suggestedLocalModelOptions.map((model) => (
+                      <button
+                        key={model.name}
+                        onClick={() => setLocalModel(model.name)}
+                        className={`rounded-md border px-3 py-2 text-left transition active:scale-[0.97] ${
+                          localModel === model.name
+                            ? 'border-emerald-700 bg-emerald-700 text-white'
+                            : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span className="block text-xs font-semibold">{model.label}</span>
+                        <span className={`mt-0.5 block text-[11px] ${localModel === model.name ? 'text-emerald-50' : 'text-slate-500'}`}>
+                          {model.name} - {model.tier}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-xs leading-5 text-slate-500">
+                    Larger parameter models need more RAM or VRAM; if Ollama reports memory pressure, choose a smaller model.
+                  </div>
                 </div>
 
                 {status?.local?.running && (

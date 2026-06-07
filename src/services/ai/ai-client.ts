@@ -360,9 +360,9 @@ ${JSON.stringify(context, null, 2)}`;
 
       // Common JavaScript/TypeScript fixes
       // Fix missing semicolons at end of statements
-      const missingColons = fixed.match(/\)(?!\s*[,;:\)}\]])\n/g);
+      const missingColons = fixed.match(/\)(?!\s*[,;:\)}\]])\r?\n/g);
       if (missingColons) {
-        fixed = fixed.replace(/\)(?!\s*[,;:\)}\]])\n/g, ');\n');
+        fixed = fixed.replace(/\)(?!\s*[,;:\)}\]])(\r?\n)/g, ');$1');
         changes.push('Added missing semicolons');
       }
 
@@ -393,14 +393,14 @@ ${JSON.stringify(context, null, 2)}`;
       }
 
       const beforeReturnSemicolons = fixed;
-      fixed = fixed.replace(/^(\s*return\s+[^;\n{}]+)$/gm, '$1;');
+      fixed = fixed.replace(/^(\s*return\s+[^;\r\n{}]+)$/gm, '$1;');
       if (fixed !== beforeReturnSemicolons) {
         changes.push('Added missing return semicolons');
       }
 
       const beforeJavaStatementSemicolons = fixed;
-      fixed = fixed.replace(/^(\s*System\.out\.[^;\n{}]+)$/gm, '$1;');
-      fixed = fixed.replace(/^(\s*[A-Za-z_$][\w$<>\[\]]*\s+[A-Za-z_$][\w$]*\s*=\s*new\s+[^;\n{}]+)$/gm, '$1;');
+      fixed = fixed.replace(/^(\s*System\.out\.[^;\r\n{}]+)$/gm, '$1;');
+      fixed = fixed.replace(/^(\s*[A-Za-z_$][\w$<>\[\]]*\s+[A-Za-z_$][\w$]*\s*=\s*new\s+[^;\r\n{}]+)$/gm, '$1;');
       if (fixed !== beforeJavaStatementSemicolons) {
         changes.push('Added missing Java statement semicolons');
       }

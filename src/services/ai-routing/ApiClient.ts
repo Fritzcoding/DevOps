@@ -21,7 +21,70 @@ export class ApiClient {
     if (url.includes('anthropic.com')) {
       return this.executeAnthropic(url, apiKey, model, request);
     }
+    if (url.includes('generativelanguage.googleapis.com') || url.includes('/v1beta/models/')) {
+      return this.executeGemini(url, apiKey, model, request);
+    }
     return this.executeOpenAICompatible(url, apiKey, model, request);
+  }
+
+  private buildGeminiUrl(url: string, model: string): string {
+    if (url.includes(':generateContent')) {
+      return url;
+    }
+
+    const baseUrl = url.replace(/\/$/, '');
+    if (baseUrl.endsWith(`/models/${model}`)) {
+      return `${baseUrl}:generateContent`;
+    }
+    if (baseUrl.endsWith('/models')) {
+      return `${baseUrl}/${encodeURIComponent(model)}:generateContent`;
+    }
+    return `${baseUrl}/models/${encodeURIComponent(model)}:generateContent`;
+  }
+
+  private async executeGemini(
+    url: string,
+    apiKey: string,
+    model: string,
+    request: PromptRequest,
+  ): Promise<string> {
+    const response = await fetch(this.buildGeminiUrl(url, model), {
+      method: 'POST',
+      headers: {
+        'x-goog-api-key': apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...(request.systemPrompt
+          ? { systemInstruction: { parts: [{ text: request.systemPrompt }] } }
+          : {}),
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: request.userPrompt }],
+          },
+        ],
+        generationConfig: {
+          temperature: request.temperature ?? 0.3,
+          maxOutputTokens: request.maxTokens ?? 4096,
+        },
+      }),
+    });
+
+    const body = await response.text();
+    if (!response.ok) {
+      throw new Error(`Gemini API request failed (${response.status}): ${body.slice(0, 500)}`);
+    }
+
+    const data = JSON.parse(body);
+    const text = data?.candidates?.[0]?.content?.parts
+      ?.map((part: any) => part?.text || '')
+      .join('')
+      .trim();
+    if (!text) {
+      throw new Error('Gemini API returned an empty response.');
+    }
+    return text;
   }
 
   private async executeOpenAICompatible(

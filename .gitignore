@@ -13,6 +13,7 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+!samples/pristine/file-organizer-logic/trace.log
 .env*
 !.env.example
 !tests/fixtures/pristine/**/.env.local
