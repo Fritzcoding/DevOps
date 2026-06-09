@@ -38,7 +38,7 @@ export const helpContent = {
         {
           title: 'Step 1: Set Your Project Path',
           description:
-            'Click "Refresh" in the Feature Menu to auto-detect your project, or manually enter the project folder path. This helps the fixer understand your codebase context.',
+            'Click "Current" in the Feature Menu to auto-detect your project, or manually enter the project folder path. This helps the fixer understand your codebase context.',
           example: '/Users/myname/projects/myapp or C:\\Users\\myname\\projects\\myapp',
           tips: [
             'The path should be the root directory of your project',

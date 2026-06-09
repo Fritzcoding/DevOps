@@ -94,6 +94,9 @@ const electronAPI: ElectronAPI = {
   setIgnoreMouseEvents: (ignore: boolean) =>
     ipcRenderer.invoke('devops:window:set-ignore-mouse-events', ignore),
 
+  deactivateApp: () =>
+    ipcRenderer.invoke('devops:app:deactivate'),
+
   getAISettings: () =>
     ipcRenderer.invoke('devops:ai:get-settings'),
 

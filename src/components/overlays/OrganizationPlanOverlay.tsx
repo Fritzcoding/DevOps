@@ -92,7 +92,7 @@ const OrganizationPlanOverlay: React.FC<OrganizationPlanProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 flex justify-between items-center">
+        <div className="bg-cyan-800 text-white p-4 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold">Organization Plan</h2>
             <p className="text-sm opacity-90 mt-1">{summary}</p>

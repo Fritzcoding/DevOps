@@ -54,7 +54,7 @@ const faqs = [
   },
   {
     question: 'How do I switch project folders?',
-    answer: 'Use Browse, Current, or Refresh in the feature menu. The selected path is saved locally.',
+    answer: 'Use Browse or Current in the feature menu. The selected path is saved locally.',
   },
   {
     question: 'How do rooms work?',
@@ -122,7 +122,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose, onBack }) => {
                 <div className="mt-3 space-y-2 text-sm text-slate-700">
                   <div className="flex items-center gap-2"><KeyRound className="h-4 w-4 text-slate-500" /> Create or join a development room by key.</div>
                   <div className="flex items-center gap-2"><Bot className="h-4 w-4 text-slate-500" /> Use Code Fixer in codebase scope for broader context.</div>
-                  <div className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-slate-500" /> Use Refresh in the menu to re-read the current path.</div>
+                  <div className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-slate-500" /> Use Current in the menu to re-read the current path.</div>
                 </div>
               </div>
             </div>

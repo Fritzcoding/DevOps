@@ -567,6 +567,12 @@ ipcMain.handle('devops:window:set-ignore-mouse-events', async (_event: IpcMainIn
   return { success: true };
 });
 
+ipcMain.handle('devops:app:deactivate', async () => {
+  (app as any).isQuitting = true;
+  app.quit();
+  return { success: true };
+});
+
 ipcMain.handle('devops:ai:get-settings', async () => {
   return {
     success: true,

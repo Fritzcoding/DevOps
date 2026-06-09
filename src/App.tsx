@@ -8,12 +8,14 @@ import OrganizationPlanOverlay from "./components/overlays/OrganizationPlanOverl
 import PathInputModal from "./components/modals/PathInputModal";
 import HelpModal from "./components/modals/HelpModal";
 import AISettingsModal from "./components/modals/AISettingsModal";
+import AppearanceSettingsModal from "./components/modals/AppearanceSettingsModal";
 import CodeFixerAgentOverlay from "./components/overlays/CodeFixerAgentOverlay";
 import FileOrganizerWorkbench from "./components/overlays/FileOrganizerWorkbench";
 import CodebaseChatOverlay from "./components/overlays/CodebaseChatOverlay";
 import DiscussionRoomOverlay from "./components/overlays/DiscussionRoomOverlay";
 import { eventBus } from "./core/event-bus";
 import type { TestSample } from "./window";
+import { loadUISettings, saveUISettings, type UISettings } from "./ui-settings";
 
 type FeatureId = "code-fixer" | "environment" | "organizer" | "chat" | "room" | "help" | "settings";
 type PanelSize = { width: number; height: number };
@@ -29,6 +31,7 @@ const PLAN_PANEL_SIZE: PanelSize = { width: 920, height: 720 };
 const ROOM_PANEL_SIZE: PanelSize = { width: 960, height: 720 };
 const HELP_PANEL_SIZE: PanelSize = { width: 1060, height: 760 };
 const SETTINGS_PANEL_SIZE: PanelSize = { width: 1080, height: 780 };
+const APPEARANCE_PANEL_SIZE: PanelSize = { width: 900, height: 680 };
 const STATUS_PANEL_SIZE: PanelSize = { width: 520, height: 420 };
 const PANEL_SIZE_KEY = "devops-panel-size";
 const LAST_PANEL_KEY = "devops-last-panel";
@@ -79,9 +82,11 @@ export default function App() {
   const [showDiscussionRoom, setShowDiscussionRoom] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showAISettings, setShowAISettings] = useState(false);
+  const [showAppearanceSettings, setShowAppearanceSettings] = useState(false);
   const [aiStatus, setAIStatus] = useState<any>(null);
   const [testSamples, setTestSamples] = useState<TestSample[]>([]);
   const [panelSize, setPanelSize] = useState<PanelSize>(() => loadPanelSize());
+  const [uiSettings, setUISettings] = useState<UISettings>(() => loadUISettings());
   const [lastPanel, setLastPanel] = useState<FeatureId | null>(() => {
     const saved = localStorage.getItem(LAST_PANEL_KEY);
     return saved === "code-fixer" || saved === "environment" || saved === "organizer" || saved === "chat" || saved === "room" || saved === "help" || saved === "settings"
@@ -125,6 +130,10 @@ export default function App() {
   useEffect(() => {
     refreshAIStatus();
   }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.uiTheme = uiSettings.theme;
+  }, [uiSettings.theme]);
 
   const refreshTestSamples = useCallback(async () => {
     try {
@@ -177,6 +186,7 @@ export default function App() {
     showDiscussionRoom ||
     showHelpModal ||
     showAISettings ||
+    showAppearanceSettings ||
     showPathModal ||
     showDiffViewer ||
     showSetupSteps ||
@@ -189,6 +199,7 @@ export default function App() {
     if (showCodeFixerAgent) return CODE_FIXER_PANEL_SIZE;
     if (showEnvironmentWorkbench) return ENV_PANEL_SIZE;
     if (showAISettings) return SETTINGS_PANEL_SIZE;
+    if (showAppearanceSettings) return APPEARANCE_PANEL_SIZE;
     if (showHelpModal) return HELP_PANEL_SIZE;
     if (showDiscussionRoom) return ROOM_PANEL_SIZE;
     if (showOrganizerWorkbench) return ORGANIZER_PANEL_SIZE;
@@ -217,6 +228,7 @@ export default function App() {
     showCodeFixerAgent,
     showEnvironmentWorkbench,
     showAISettings,
+    showAppearanceSettings,
     showHelpModal,
     showDiscussionRoom,
     showOrganizerWorkbench,
@@ -240,6 +252,11 @@ export default function App() {
   const rememberPanel = (panel: FeatureId) => {
     setLastPanel(panel);
     localStorage.setItem(LAST_PANEL_KEY, panel);
+  };
+
+  const updateUISettings = (settings: UISettings) => {
+    setUISettings(settings);
+    saveUISettings(settings);
   };
 
   useEffect(() => {
@@ -424,6 +441,7 @@ export default function App() {
     setShowDiscussionRoom(false);
     setShowHelpModal(false);
     setShowAISettings(false);
+    setShowAppearanceSettings(false);
     setShowDiffViewer(false);
     setShowSetupSteps(false);
     setShowOrganizationPlan(false);
@@ -462,7 +480,7 @@ export default function App() {
   };
 
   return (
-    <div>
+    <div className="ui-shell">
       {/* Shimeji Widget */}
       <Shimeji
         onFeatureSelect={handleFeatureSelect}
@@ -471,7 +489,12 @@ export default function App() {
         }}
         onShowMenu={handleShimejiClick}
         onContextMenuChange={setShimejiContextOpen}
+        onOpenAppearanceSettings={() => {
+          closeVisiblePanels();
+          setShowAppearanceSettings(true);
+        }}
         currentProjectPath={projectPath}
+        uiSettings={uiSettings}
       />
 
       {/* Feature Menu */}
@@ -482,8 +505,9 @@ export default function App() {
           onFeatureSelect={handleFeatureSelect}
           currentProjectPath={projectPath}
           onChangeProjectPath={() => setShowPathModal(true)}
-          onRefreshProjectPath={handleSelectPath}
           onUseCurrentProjectPath={handleUseCurrentProjectPath}
+          onOpenAppearanceSettings={() => setShowAppearanceSettings(true)}
+          onDeactivate={() => window.electronAPI?.deactivateApp?.()}
           aiStatus={aiStatus}
           onSetActiveAIBackend={async (backend) => {
             await window.electronAPI?.setActiveAIBackend?.(backend);
@@ -581,6 +605,15 @@ export default function App() {
           firstRun={!aiStatus?.settings?.firstLaunchComplete}
           onClose={() => setShowAISettings(false)}
           onSaved={refreshAIStatus}
+          onBack={handleBackToMenu}
+        />
+      )}
+
+      {showAppearanceSettings && (
+        <AppearanceSettingsModal
+          settings={uiSettings}
+          onSave={updateUISettings}
+          onClose={() => setShowAppearanceSettings(false)}
           onBack={handleBackToMenu}
         />
       )}

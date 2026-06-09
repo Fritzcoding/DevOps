@@ -79,6 +79,7 @@ export interface ElectronAPI {
   moveWindow(x: number, y: number): Promise<void>;
   resizeWindow(width: number, height: number): Promise<void>;
   setIgnoreMouseEvents(ignore: boolean): Promise<void>;
+  deactivateApp(): Promise<{ success: boolean }>;
   getAISettings(): Promise<any>;
   saveAISettings(settings: any): Promise<any>;
   completeAISetup(): Promise<any>;

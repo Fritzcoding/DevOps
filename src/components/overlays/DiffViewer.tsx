@@ -48,7 +48,7 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-2xl max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex justify-between items-center">
+        <div className="bg-slate-950 text-white p-4 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold">Code Fix Suggestion</h2>
             <p className="text-sm opacity-90 mt-1">{explanation}</p>

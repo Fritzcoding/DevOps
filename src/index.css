@@ -5,7 +5,7 @@
   --color-sidebar: #15181E;
   --color-editor: #0F1115;
   --color-header: #1A1D23;
-  --color-accent: #6366f1;
+  --color-accent: #0891b2;
 }
 
 /* Global - ensure complete transparency */
@@ -33,7 +33,7 @@ body {
   background: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 #root {
@@ -81,6 +81,104 @@ body {
 
 .monaco-editor {
   padding-top: 10px;
+}
+
+:root,
+[data-ui-theme="light"] {
+  --ui-bg: #f5fbfd;
+  --ui-panel: rgba(255, 255, 255, 0.96);
+  --ui-panel-solid: #ffffff;
+  --ui-soft: #eef8fb;
+  --ui-hover: #e6f4f8;
+  --ui-selected: #dff4f8;
+  --ui-border: #c9e2e8;
+  --ui-text: #10212b;
+  --ui-muted: #5d7180;
+  --ui-primary: #0e7490;
+  --ui-primary-hover: #155e75;
+  --ui-accent: #14b8a6;
+  --ui-danger: #b42318;
+  --ui-scrim: rgba(8, 24, 32, 0.42);
+  --ui-shadow: 0 24px 80px rgba(12, 39, 50, 0.18);
+}
+
+[data-ui-theme="dark"] {
+  color-scheme: dark;
+  --ui-bg: #071318;
+  --ui-panel: rgba(10, 24, 31, 0.96);
+  --ui-panel-solid: #0a181f;
+  --ui-soft: #102832;
+  --ui-hover: #173642;
+  --ui-selected: #123f4b;
+  --ui-border: #244653;
+  --ui-text: #e8f6f8;
+  --ui-muted: #9fbbc5;
+  --ui-primary: #0891b2;
+  --ui-primary-hover: #0e7490;
+  --ui-accent: #2dd4bf;
+  --ui-danger: #fb7185;
+  --ui-scrim: rgba(0, 8, 12, 0.62);
+  --ui-shadow: 0 28px 90px rgba(0, 0, 0, 0.38);
+}
+
+.ui-shell {
+  color: var(--ui-text);
+}
+
+.mascot-motion-float {
+  animation: mascotFloat 4.5s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+
+.mascot-motion-bob {
+  animation: mascotBob 2.2s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+
+.mascot-motion-orbit {
+  animation: mascotOrbit 5.2s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+
+@keyframes mascotFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+@keyframes mascotBob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  45% {
+    transform: translate3d(0, -4px, 0) scale(1.025);
+  }
+}
+
+@keyframes mascotOrbit {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate3d(4px, -4px, 0);
+  }
+  50% {
+    transform: translate3d(0, -7px, 0);
+  }
+  75% {
+    transform: translate3d(-4px, -4px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-motion-float,
+  .mascot-motion-bob,
+  .mascot-motion-orbit {
+    animation: none;
+  }
 }
 
 @keyframes popIn {

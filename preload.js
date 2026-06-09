@@ -48,6 +48,7 @@ const electronAPI = {
     moveWindow: (x, y) => electron_1.ipcRenderer.invoke('devops:window:move', x, y),
     resizeWindow: (width, height) => electron_1.ipcRenderer.invoke('devops:window:resize', width, height),
     setIgnoreMouseEvents: (ignore) => electron_1.ipcRenderer.invoke('devops:window:set-ignore-mouse-events', ignore),
+    deactivateApp: () => electron_1.ipcRenderer.invoke('devops:app:deactivate'),
     getAISettings: () => electron_1.ipcRenderer.invoke('devops:ai:get-settings'),
     saveAISettings: (settings) => electron_1.ipcRenderer.invoke('devops:ai:save-settings', settings),
     completeAISetup: () => electron_1.ipcRenderer.invoke('devops:ai:complete-setup'),

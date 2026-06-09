@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Zap, Settings, X } from "lucide-react";
+import { Palette, Settings, X } from "lucide-react";
+import { DEFAULT_MASCOT_IMAGE, type UISettings } from "../ui-settings";
 
 interface ShimejiProps {
   onFeatureSelect: (feature: "code-fixer" | "environment" | "organizer" | "chat" | "room" | "help" | "settings") => void;
   onMinimizeToTray: () => void;
   onShowMenu: () => void;
   onContextMenuChange?: (open: boolean) => void;
+  onOpenAppearanceSettings?: () => void;
   currentProjectPath?: string;
+  uiSettings: UISettings;
 }
 
 const Shimeji: React.FC<ShimejiProps> = ({
@@ -14,7 +17,9 @@ const Shimeji: React.FC<ShimejiProps> = ({
   onMinimizeToTray,
   onShowMenu,
   onContextMenuChange,
+  onOpenAppearanceSettings,
   currentProjectPath,
+  uiSettings,
 }) => {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -89,8 +94,6 @@ const Shimeji: React.FC<ShimejiProps> = ({
     }
   }, [showContextMenu]);
 
-
-
   return (
     <div
       ref={shimejiRef}
@@ -115,39 +118,71 @@ const Shimeji: React.FC<ShimejiProps> = ({
         height: 64,
       }}
       data-electron-interactive="true"
-      className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg flex items-center justify-center"
+      className="h-16 w-16 rounded-full"
       title="DevOps Lite - Click to open or close menu | Right-click for options"
     >
-      <Zap className="w-8 h-8 text-white" />
+      <div
+        className={`h-16 w-16 overflow-hidden rounded-full border border-white/70 bg-white shadow-[0_12px_34px_rgba(8,74,92,0.28)] ${
+          isDragging ? "" : `mascot-motion-${uiSettings.mascotMotion}`
+        }`}
+      >
+        <img
+          src={uiSettings.mascotImage || DEFAULT_MASCOT_IMAGE}
+          alt="DevOps Lite shimeji"
+          className="h-full w-full object-cover"
+          draggable={false}
+          onError={(event) => {
+            if (event.currentTarget.src !== DEFAULT_MASCOT_IMAGE) {
+              event.currentTarget.src = DEFAULT_MASCOT_IMAGE;
+            }
+          }}
+        />
+      </div>
 
       {showContextMenu && (
         <div
           ref={contextMenuRef}
           data-electron-interactive="true"
-          className="absolute top-16 left-0 bg-white rounded-lg shadow-xl border border-gray-200 py-2 w-48 z-50"
+          className="absolute left-0 top-16 z-50 w-52 rounded-lg border border-[var(--ui-border)] bg-[var(--ui-panel)] py-2 text-[var(--ui-text)] shadow-xl"
         >
           <button
             onClick={() => {
               onMinimizeToTray();
               setShowContextMenu(false);
             }}
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm font-medium text-gray-700 flex items-center gap-2"
+            className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-[var(--ui-text)] transition hover:bg-[var(--ui-hover)]"
           >
-            <X className="w-4 h-4" /> Minimize to Tray
+            <X className="h-4 w-4" />
+            Minimize to Tray
+          </button>
+          <button
+            onClick={() => {
+              onOpenAppearanceSettings?.();
+              setShowContextMenu(false);
+            }}
+            className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-[var(--ui-text)] transition hover:bg-[var(--ui-hover)]"
+          >
+            <Palette className="h-4 w-4" />
+            Appearance
           </button>
           <button
             onClick={() => {
               onFeatureSelect("settings");
               setShowContextMenu(false);
             }}
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm font-medium text-gray-700 flex items-center gap-2"
+            className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-[var(--ui-text)] transition hover:bg-[var(--ui-hover)]"
           >
-            <Settings className="w-4 h-4" /> Settings
+            <Settings className="h-4 w-4" />
+            AI Settings
           </button>
-          <div className="border-t border-gray-200 my-1" />
-          <div className="px-4 py-2 text-xs text-gray-500">
-            {currentProjectPath && <div className="truncate">📁 {currentProjectPath}</div>}
-          </div>
+          {currentProjectPath && (
+            <>
+              <div className="my-1 border-t border-[var(--ui-border)]" />
+              <div className="truncate px-4 py-2 text-xs text-[var(--ui-muted)]" title={currentProjectPath}>
+                {currentProjectPath}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

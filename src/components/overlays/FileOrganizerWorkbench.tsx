@@ -50,10 +50,10 @@ export const FileOrganizerWorkbench: React.FC<Props> = ({ projectPath, samples =
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" data-electron-interactive="true">
       <div className="w-full max-w-2xl rounded-lg bg-white shadow-2xl">
-        <div className="flex items-center justify-between bg-purple-700 px-5 py-4 text-white">
+        <div className="flex items-center justify-between bg-cyan-800 px-5 py-4 text-white">
           <div>
             <h2 className="text-lg font-semibold">File Organizer</h2>
-            <p className="text-xs text-purple-100">Create a professional or AI-guided organization plan before applying changes.</p>
+            <p className="text-xs text-cyan-100">Create a professional or AI-guided organization plan before applying changes.</p>
           </div>
           <div className="flex items-center gap-2">
             {onBack && (
@@ -98,13 +98,13 @@ export const FileOrganizerWorkbench: React.FC<Props> = ({ projectPath, samples =
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => setMode('professional')} className={`rounded-md border p-4 text-left ${mode === 'professional' ? 'border-purple-700 bg-purple-50' : 'border-slate-200'}`}>
-              <FolderTree className="mb-2 h-5 w-5 text-purple-700" />
+            <button onClick={() => setMode('professional')} className={`rounded-md border p-4 text-left ${mode === 'professional' ? 'border-cyan-800 bg-cyan-50' : 'border-slate-200'}`}>
+              <FolderTree className="mb-2 h-5 w-5 text-cyan-800" />
               <div className="font-semibold">Professional sorting</div>
               <div className="text-xs text-slate-500">Conservative rules for docs, assets, scripts, tests, and cleanup.</div>
             </button>
-            <button onClick={() => setMode('ai')} className={`rounded-md border p-4 text-left ${mode === 'ai' ? 'border-purple-700 bg-purple-50' : 'border-slate-200'}`}>
-              <Brain className="mb-2 h-5 w-5 text-purple-700" />
+            <button onClick={() => setMode('ai')} className={`rounded-md border p-4 text-left ${mode === 'ai' ? 'border-cyan-800 bg-cyan-50' : 'border-slate-200'}`}>
+              <Brain className="mb-2 h-5 w-5 text-cyan-800" />
               <div className="font-semibold">AI instruction</div>
               <div className="text-xs text-slate-500">Describe exactly how the selected path should be sorted.</div>
             </button>
@@ -119,7 +119,7 @@ export const FileOrganizerWorkbench: React.FC<Props> = ({ projectPath, samples =
 
           <div className="flex justify-end gap-2">
             <button onClick={onClose} className="rounded-md px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">Cancel</button>
-            <button onClick={run} disabled={loading} className="flex items-center gap-2 rounded-md bg-purple-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+            <button onClick={run} disabled={loading} className="flex items-center gap-2 rounded-md bg-cyan-800 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-900 disabled:opacity-50">
               <Play className="h-4 w-4" /> {loading ? 'Planning...' : 'Create Plan'}
             </button>
           </div>
