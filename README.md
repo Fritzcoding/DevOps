@@ -1,6 +1,6 @@
-# DevOps Lite
+# DevOS Lite
 
-DevOps Lite is an Electron desktop assistant for developer workflows. It provides Code Fixer, Environment Builder, File Organizer, Codebase Chat, and Discussion Room features through a floating Shimeji-style UI.
+DevOS Lite is an Electron desktop assistant for developer workflows. It provides Code Fixer, Environment Builder, File Organizer, Codebase Chat, and Discussion Room features through a floating Shimeji-style UI.
 
 ## Clean Laptop Setup
 
@@ -23,7 +23,7 @@ npm --version
 
 ```bash
 git clone <repo-url>
-cd devops-lite
+cd DevOS-lite
 npm run setup
 ```
 
@@ -86,7 +86,7 @@ Environment Builder scans a selected project and returns setup guidance for the 
 Current integration:
 
 - Renderer calls `window.electronAPI.detectEnv(projectPath)`.
-- Preload forwards to `devops:env:detect`.
+- Preload forwards to `DevOS:env:detect`.
 - Main process scans the selected project and asks the configured AI route for setup steps.
 - `SetupStepsOverlay` displays detected type, missing tools, commands, environment variables, and estimated setup time.
 
@@ -120,9 +120,9 @@ Current integration:
 - Renderer calls `window.electronAPI.organizeFiles(folderPath, mode, instruction)`.
 - Main process calls `generateOrganizerPlan`.
 - Apply calls `SafeFileOperationExecutor`.
-- Rollback metadata is saved under `.devops-lite-organizer/rollback-<batch>.jsonl` inside the selected project.
+- Rollback metadata is saved under `.DevOS-lite-organizer/rollback-<batch>.jsonl` inside the selected project.
 
-Protected paths include `.git`, `node_modules`, build outputs, lockfiles, `.env*`, `.devops-lite-organizer`, and trash/rollback internals.
+Protected paths include `.git`, `node_modules`, build outputs, lockfiles, `.env*`, `.DevOS-lite-organizer`, and trash/rollback internals.
 
 ## Architecture
 
@@ -144,7 +144,7 @@ Renderer code must not import Node or Electron APIs directly. File and shell acc
 - `electron` or `vite` is not recognized: run `npm run setup` from the repo root.
 - Cloud AI says key missing: add a key in AI Settings or set `GEMINI_API_KEY` in `.env.local`.
 - Ollama model missing: open AI Settings and download the selected model, or run `ollama pull qwen2.5-coder:7b`.
-- `ollama` command not found but Ollama is running: reinstall/update Ollama, restart your terminal and DevOps Lite, then verify `ollama --version`.
+- `ollama` command not found but Ollama is running: reinstall/update Ollama, restart your terminal and DevOS Lite, then verify `ollama --version`.
 - Blank or stale app after pulling changes: run `npm run clean && npm run setup && npm run dev`.
 
 ## Security Notes
