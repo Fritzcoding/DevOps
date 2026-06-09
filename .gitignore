@@ -30,18 +30,9 @@ tests/fixtures/workdir/
 samples/workdir/
 
 .codex/
-copilot-instructions.md
-.github/agents/
-.github/AGENTS.md
-.github/SKILLS.md
-.github/copilot-instructions.md
-.github/handoff.md
-.github/roadmap.md
-.github/project-context.md
-.github/problems.md
-.github/BUGFIX_TEMPPROBLEM.md
-.github/SHIMEJI_REGRESSION_FIX.md
-.github/instructions/
+.github/
+presentation/
+outputs/
 
 QUICK_REFERENCE.md
 JAVA_INTEGRATION.md
