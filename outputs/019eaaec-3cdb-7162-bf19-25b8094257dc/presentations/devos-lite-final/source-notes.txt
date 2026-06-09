@@ -1,9 +1,0 @@
-Sources used:
-- README.md: product description, architecture entrypoints, commands, safety notes.
-- description.md: technology stack, motivation, AI routing, local Ollama setup.
-- JAVA_INTEGRATION.md and QUICK_REFERENCE.md: optional Java backend, JSON/stdin bridge, performance claims.
-- tests/features.test.ts: verified Env Builder scan, File Organizer preview/dry-run/apply/rollback.
-- assets/Devos_logo.png: user-provided identity asset embedded as the deck logo.
-
-presentation-req.txt:
-- The file exists but is empty at time of creation.

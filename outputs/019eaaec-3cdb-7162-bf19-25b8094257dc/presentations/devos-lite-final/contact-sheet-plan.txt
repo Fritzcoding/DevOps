@@ -1,7 +1,0 @@
-1. Cover with logo and compact proof rail.
-2. Before/after workflow contrast.
-3. Architecture system map.
-4. Feature proof matrix.
-5. Safety and verification pipeline.
-6. Timeline plus division of labor.
-7. Demo handoff checklist.

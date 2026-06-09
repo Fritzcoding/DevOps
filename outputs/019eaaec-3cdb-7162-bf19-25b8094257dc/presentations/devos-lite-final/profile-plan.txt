@@ -1,8 +1,0 @@
-Task mode: create
-Primary deck-profile: engineering-platform
-Secondary gates: product-platform, because the deck must show workflow value and demo-ready product features.
-Required proof objects: architecture map, feature-to-demo matrix, safety pipeline, timeline and contribution split.
-Source assets: user-provided DevOS Lite logo at assets/Devos_logo.png; project README and local implementation docs.
-Brand constraints: use the provided logo only; no fabricated mascot or pseudo-official marks.
-QA gates: concise 5-minute flow, no filler slides, diagrams must use real project components.
-Missing inputs: presentation-req.txt is empty; team member names are unknown, so role labels use Member 1/2/3 placeholders.
